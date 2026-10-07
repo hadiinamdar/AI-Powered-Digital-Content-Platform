@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JZD Technologies — Content Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F2FB; --surface:#FFFFFF; --line:#E7E2F4;
+  --ink:#1E1B2E; --ink-soft:#69607F; --ink-faint:#9891A8;
+  --primary:#6D3FE0; --primary-ink:#FFFFFF; --primary-soft:#EFE8FC; --primary-dark:#5A2FCB;
+  --success:#1FA971; --success-bg:#E3F8EE;
+  --danger:#E5484D; --danger-bg:#FDEAEA;
+  --pending:#B8791A; --pending-bg:#FCF1DA;
+  --side-bg:#160C2C; --side-bg2:#241344; --side-ink:#ECE7FA; --side-soft:#A79BC9;
+  --shadow:0 20px 45px -22px rgba(35,15,90,.28), 0 2px 10px rgba(35,15,90,.08);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F0C1A; --surface:#1A1530; --line:#2C2650;
+    --ink:#EDEAF7; --ink-soft:#B2A9CC; --ink-faint:#7A7196;
+    --primary-soft:#2A2154;
+    --success-bg:#153A2C; --danger-bg:#3A1A1C; --pending-bg:#3A2C10;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F0C1A; --surface:#1A1530; --line:#2C2650;
+  --ink:#EDEAF7; --ink-soft:#B2A9CC; --ink-faint:#7A7196;
+  --primary-soft:#2A2154; --success-bg:#153A2C; --danger-bg:#3A1A1C; --pending-bg:#3A2C10;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--bg);min-height:100%;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+.logo{display:flex;align-items:baseline;gap:6px;}
+.logo b{font-size:19px;font-weight:800;letter-spacing:.2px;}
+.logo span{font-size:9px;letter-spacing:1.6px;color:var(--ink-faint);font-weight:600;}
+.logo.on-dark b{color:#fff;} .logo.on-dark span{color:var(--side-soft);}
+
+/* ===== Centered auth shell ===== */
+#authShell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px 16px;}
+.authwrap{width:100%;max-width:960px;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;display:flex;min-height:520px;border:1px solid var(--line);}
+.hero{width:280px;flex:none;background:linear-gradient(160deg,var(--side-bg),var(--side-bg2));color:var(--side-ink);padding:32px 26px;display:flex;flex-direction:column;}
+.hero h1{font-size:23px;line-height:1.25;margin:22px 0 10px;font-weight:800;}
+.hero p{font-size:12.5px;color:var(--side-soft);line-height:1.6;margin:0 0 auto;}
+.aimark{width:64px;height:64px;border-radius:16px;margin:26px auto 14px;background:linear-gradient(135deg,#8B5CF6,#3B82F6);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px rgba(139,92,246,.18);}
+.aimark b{color:#fff;font-size:20px;font-weight:800;}
+.socialrow{display:flex;gap:10px;margin-top:18px;}
+.socialrow .s{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;}
+.authbody{flex:1;padding:38px 40px;display:flex;flex-direction:column;justify-content:center;}
+.screen{display:none;animation:in .3s ease;}
+.screen.active{display:flex;flex-direction:column;}
+@keyframes in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+h2.title{font-size:21px;margin:0 0 4px;font-weight:800;}
+.sub{font-size:13.5px;color:var(--ink-soft);line-height:1.55;margin:0 0 20px;}
+
+.optioncard{border:1.5px solid var(--line);border-radius:13px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:12px;background:var(--surface);transition:border-color .15s;}
+.optioncard:hover{border-color:var(--primary);}
+.optioncard .oicon{width:42px;height:42px;border-radius:11px;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;flex:none;}
+.optioncard .otxt b{display:block;font-size:14.5px;}
+.optioncard .otxt span{font-size:12px;color:var(--ink-faint);}
+.optioncard .oarrow{margin-left:auto;color:var(--primary);}
+
+.stepper{display:flex;align-items:center;gap:8px;margin-bottom:24px;}
+.stepper .sc{display:flex;align-items:center;gap:8px;}
+.stepper .sn{width:24px;height:24px;border-radius:50%;background:var(--line);color:var(--ink-faint);font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.stepper .sn.on{background:var(--primary);color:#fff;}
+.stepper .sn.done{background:var(--success);color:#fff;}
+.stepper .sl{font-size:11.5px;color:var(--ink-faint);font-weight:600;}
+.stepper .sl.on{color:var(--ink);}
+.stepper .bar{flex:1;height:1.5px;background:var(--line);}
+
+label{font-size:12.5px;color:var(--ink-soft);display:block;margin:13px 0 6px;font-weight:500;}
+label:first-of-type{margin-top:0;}
+.field{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:9px;font-size:14px;color:var(--ink);background:var(--surface);font-family:inherit;}
+.field:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+.btn{border:none;border-radius:10px;padding:12px 18px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-top:18px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn:active{transform:scale(.98);}
+.btn[disabled]{opacity:.5;cursor:not-allowed;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-ghost{background:transparent;color:var(--ink-soft);border:1.5px solid var(--line);}
+.btn-success{background:var(--success);color:#fff;}
+.linklike{background:none;border:none;color:var(--primary);font-weight:700;cursor:pointer;font-family:inherit;font-size:inherit;padding:0;}
+.foot-link{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:16px;}
+
+.otp-row{display:flex;gap:9px;margin:18px 0 6px;justify-content:center;}
+.otp-box{width:46px;height:54px;border:1.5px solid var(--line);border-radius:10px;text-align:center;font-size:19px;font-weight:700;color:var(--ink);background:var(--surface);}
+.otp-box:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+.envwrap{width:64px;height:64px;border-radius:16px;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.center{text-align:center;}
+
+/* ===== App shell (sidebar) ===== */
+#appShell{display:none;min-height:100vh;}
+#appShell.active{display:flex;}
+.sidebar{width:230px;flex:none;background:var(--side-bg);color:var(--side-ink);padding:22px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+.sidebar .logo{padding:0 8px 22px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:14px;}
+.navitem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;color:var(--side-soft);font-size:13.5px;font-weight:500;cursor:pointer;margin-bottom:2px;background:none;border:none;width:100%;text-align:left;font-family:inherit;}
+.navitem.on{background:var(--primary);color:#fff;}
+.navitem:not(.on):hover{background:rgba(255,255,255,.06);color:#fff;}
+.navdot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none;opacity:.8;}
+.navspacer{flex:1;}
+.main{flex:1;padding:30px 36px;max-width:1180px;}
+.mainhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.mainhead h2{font-size:22px;margin:0;font-weight:800;}
+
+.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 22px;}
+.statcard{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:16px;}
+.statcard b{display:block;font-size:24px;font-weight:800;}
+.statcard span{font-size:12px;color:var(--ink-faint);}
+.welcomebar{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.qgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center;font-size:12.5px;font-weight:600;cursor:pointer;}
+.qcard .qi{width:34px;height:34px;border-radius:9px;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:26px;max-width:760px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+select.field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2369607F'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+textarea.field{resize:none;height:90px;line-height:1.5;font-family:inherit;}
+.charcount{text-align:right;font-size:11px;color:var(--ink-faint);margin-top:4px;}
+
+.genlayout{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:start;max-width:1040px;}
+.imgcard{border-radius:16px;overflow:hidden;background:linear-gradient(160deg,#0F1230,#1B2A5C);position:relative;height:340px;color:#fff;padding:26px;display:flex;flex-direction:column;justify-content:flex-end;}
+.imgcard h3{font-size:24px;line-height:1.2;margin:0 0 8px;font-weight:800;}
+.imgcard p{font-size:12px;color:#B8C4EE;margin:0 0 14px;max-width:80%;}
+.imgcard .brand{font-size:11px;letter-spacing:1.4px;font-weight:700;opacity:.85;}
+.readonlybadge{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.14);color:#fff;font-size:11px;font-weight:700;padding:5px 11px;border-radius:100px;}
+.detailrow{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;}
+.detailrow:last-of-type{border-bottom:none;}
+.detailrow span:first-child{color:var(--ink-faint);}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:100px;}
+.pill.pending{background:var(--pending-bg);color:var(--pending);}
+.pill.approved{background:var(--success-bg);color:var(--success);}
+.pill.rejected{background:var(--danger-bg);color:var(--danger);}
+
+.journey{display:flex;align-items:center;justify-content:center;gap:8px;margin:26px 0;}
+.jnode{display:flex;flex-direction:column;align-items:center;gap:8px;width:110px;}
+.jcircle{width:52px;height:52px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;}
+.jcircle.done{background:var(--success-bg);color:var(--success);}
+.jline{flex:none;width:36px;height:2px;background:var(--line);margin-top:-24px;}
+.jnode span{font-size:11.5px;font-weight:600;text-align:center;color:var(--ink-soft);}
+.noticebox{background:var(--primary-soft);border-radius:11px;padding:14px 16px;font-size:12.5px;color:var(--ink-soft);display:flex;gap:10px;align-items:flex-start;}
+
+.reviewcard{display:flex;gap:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;}
+.rthumb{width:150px;height:110px;border-radius:10px;flex:none;background:linear-gradient(160deg,#0F1230,#1B2A5C);}
+.rinfo{flex:1;}
+.rinfo .rr{display:flex;justify-content:space-between;font-size:12.5px;padding:4px 0;}
+.rinfo .rr span:first-child{color:var(--ink-faint);}
+.decisionrow{display:flex;gap:10px;margin-top:16px;}
+.decisionrow .btn{margin-top:0;}
+
+.commentbox{margin-top:16px;border:1px solid var(--line);border-radius:11px;padding:14px;background:var(--bg);}
+.commentbox p.lbl{margin:0 0 10px;font-size:12.5px;color:var(--ink-soft);}
+.bubble{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:13px;color:var(--ink-soft);margin-bottom:10px;}
+#userReplies .bubble{background:var(--primary-soft);border-color:transparent;}
+
+.iconring{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.iconring.ok{background:var(--success-bg);color:var(--success);}
+.iconring.bad{background:var(--danger-bg);color:var(--danger);}
+
+.platgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:18px 0;}
+.plat{border:1.5px solid var(--line);border-radius:12px;padding:13px;display:flex;align-items:center;gap:10px;cursor:pointer;background:var(--surface);font-family:inherit;text-align:left;}
+.plat.on{border-color:var(--primary);}
+.pmark{width:34px;height:34px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;}
+.pname{font-size:12.5px;font-weight:700;margin:0;}
+.pnote{font-size:10.5px;color:var(--ink-faint);margin:0;}
+.toggle{width:32px;height:18px;border-radius:100px;background:var(--line);position:relative;margin-left:auto;flex:none;transition:background .15s;}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .15s;}
+.plat.on .toggle{background:var(--primary);}
+.plat.on .toggle::after{left:16px;}
+.rowbtns{display:flex;gap:10px;}
+.rowbtns .btn{margin-top:20px;}
+
+.spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--ink);color:#fff;font-size:13px;padding:11px 18px;border-radius:100px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s;z-index:100;max-width:88vw;text-align:center;}
+#toast.show{opacity:1;transform:translate(-50%,0);}
+.resultrow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;}
+.resultrow:last-child{border-bottom:none;}
+.okdot{width:16px;height:16px;border-radius:50%;background:var(--success-bg);color:var(--success);display:flex;align-items:center;justify-content:center;font-size:11px;}
+
+@media (max-width:860px){
+  .authwrap{flex-direction:column;} .hero{width:100%;}
+  .statgrid,.qgrid{grid-template-columns:1fr 1fr;} .genlayout{grid-template-columns:1fr;}
+  .sidebar{display:none;} .main{padding:20px;} .platgrid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ AUTH SHELL ============ -->
+<div id="authShell">
+  <div class="authwrap">
+    <div class="hero">
+      <div class="logo on-dark"><b>JZD</b><span>TECHNOLOGIES</span></div>
+      <div class="aimark"><b>AI</b></div>
+      <h1>AI-Powered Content Creation &amp; Publishing</h1>
+      <p>Create, manage, and publish stunning content across all platforms with the power of AI.</p>
+      <div class="socialrow">
+        <div class="s">in</div><div class="s">◎</div><div class="s">f</div><div class="s">WA</div><div class="s">▶</div>
+      </div>
+    </div>
+    <div class="authbody">
+
+      <section class="screen active" id="scr-welcome">
+        <h2 class="title">Welcome</h2>
+        <p class="sub">Choose an option to continue</p>
+        <div class="optioncard" onclick="show('scr-create')">
+          <div class="oicon">＋</div>
+          <div class="otxt"><b>Create New Account</b><span>Sign up to create your account and get started</span></div>
+          <div class="oarrow">→</div>
+        </div>
+        <div class="optioncard" onclick="show('scr-signin')">
+          <div class="oicon">🔒</div>
+          <div class="otxt"><b>Sign In</b><span>Already have an account? Sign in to continue</span></div>
+          <div class="oarrow">→</div>
+        </div>
+      </section>
+
+      <section class="screen" id="scr-create">
+        <div class="stepper">
+          <div class="sc"><div class="sn on">1</div><span class="sl on">Account</span></div>
+          <div class="bar"></div>
+          <div class="sc"><div class="sn">2</div><span class="sl">Verify Email</span></div>
+          <div class="bar"></div>
+          <div class="sc"><div class="sn">3</div><span class="sl">Complete</span></div>
+        </div>
+        <h2 class="title">Create New Account</h2>
+        <label>Full Name</label>
+        <input class="field" id="fName" placeholder="Enter your full name">
+        <label>Email / Organization Email</label>
+        <input class="field" id="fEmail" placeholder="you@organization.com">
+        <label>Organization Name (optional)</label>
+        <input class="field" id="fOrg" placeholder="JZD Technologies">
+        <label>Password</label>
+        <input class="field" id="fPass" type="password" placeholder="Create a strong password">
+        <button class="btn btn-primary" onclick="submitCreate()">Send OTP</button>
+        <p class="foot-link">Already have an account? <button class="linklike" onclick="show('scr-signin')">Sign in</button></p>
+      </section>
+
+      <section class="screen" id="scr-signin">
+        <h2 class="title">Sign In</h2>
+        <p class="sub">Welcome back — enter your details to continue.</p>
+        <label>Email / Organization Email</label>
+        <input class="field" id="siEmail" placeholder="you@organization.com">
+        <label>Password</label>
+        <input class="field" type="password" id="siPass" placeholder="••••••••">
+        <p class="hint" id="signinErr" style="display:none;color:var(--danger);font-size:12px;margin:4px 0 0;"></p>
+        <button class="btn btn-primary" id="signinBtn" onclick="enterApp()">Sign In</button>
+        <p class="foot-link">New here? <button class="linklike" onclick="show('scr-welcome')">Back</button></p>
+      </section>
+
+      <section class="screen" id="scr-otp">
+        <div class="stepper">
+          <div class="sc"><div class="sn done">✓</div><span class="sl">Account</span></div>
+          <div class="bar"></div>
+          <div class="sc"><div class="sn on">2</div><span class="sl on">Verify Email</span></div>
+          <div class="bar"></div>
+          <div class="sc"><div class="sn">3</div><span class="sl">Complete</span></div>
+        </div>
+        <div class="center"><div class="envwrap">✉</div></div>
+        <h2 class="title center">Verify Your Email</h2>
+        <p class="sub center">We have sent a 6-digit OTP to<br><b id="otpEmail" style="color:var(--ink)"></b></p>
+        <div class="otp-row">
+          <input class="otp-box" maxlength="1" inputmode="numeric">
+          <input class="otp-box" maxlength="1" inputmode="numeric">
+          <input class="otp-box" maxlength="1" inputmode="numeric">
+          <input class="otp-box" maxlength="1" inputmode="numeric">
+          <input class="otp-box" maxlength="1" inputmode="numeric">
+          <input class="otp-box" maxlength="1" inputmode="numeric">
+        </div>
+        <p class="sub center" id="otpErr" style="color:var(--danger);display:none;">That code doesn't match — check the toast.</p>
+        <p class="foot-link">Didn't receive the code? <button class="linklike" onclick="sendOtp(true)">Resend OTP</button></p>
+        <button class="btn btn-primary" onclick="verifyOtp()">Verify OTP</button>
+      </section>
+
+      <section class="screen" id="scr-success">
+        <div class="center"><div class="iconring ok" style="width:64px;height:64px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div></div>
+        <h2 class="title center">Account Created Successfully!</h2>
+        <p class="sub center">Your account has been created and verified successfully. You can now sign in.</p>
+        <button class="btn btn-primary" onclick="show('scr-signin')">Go to Sign In</button>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div id="appShell">
+  <aside class="sidebar">
+    <div class="logo on-dark"><b>JZD</b><span>TECHNOLOGIES</span></div>
+    <button class="navitem on" id="nav-dash" onclick="goApp('dashboard')"><span class="navdot"></span>Dashboard</button>
+    <button class="navitem" id="nav-gen" onclick="goApp('generator')"><span class="navdot"></span>AI Content Generator</button>
+    <button class="navitem" onclick="toast('Demo prototype — not wired up')"><span class="navdot"></span>My Content</button>
+    <button class="navitem" onclick="toast('Demo prototype — not wired up')"><span class="navdot"></span>Submissions</button>
+    <button class="navitem" onclick="toast('Demo prototype — not wired up')"><span class="navdot"></span>Comments</button>
+    <button class="navitem" onclick="toast('Demo prototype — not wired up')"><span class="navdot"></span>Published Content</button>
+    <div class="navspacer"></div>
+    <button class="navitem" onclick="toast('Demo prototype — not wired up')"><span class="navdot"></span>Profile</button>
+    <button class="navitem" onclick="toast('Demo prototype — not wired up')"><span class="navdot"></span>Settings</button>
+    <button class="navitem" onclick="logout()"><span class="navdot"></span>Logout</button>
+  </aside>
+
+  <div class="main">
+
+    <section class="screen active" id="scr-dashboard">
+      <div class="mainhead"><h2>Dashboard</h2></div>
+      <div class="welcomebar">
+        <div><b style="font-size:15px;">Welcome back, John! 👋</b><div class="sub" style="margin:2px 0 0;">What would you like to create today?</div></div>
+        <button class="btn btn-primary" style="width:auto;margin:0;" onclick="goApp('generator')">Generate with AI</button>
+      </div>
+      <div class="statgrid">
+        <div class="statcard"><b>12</b><span>Total Generated</span></div>
+        <div class="statcard"><b style="color:var(--pending)">5</b><span>Under Review</span></div>
+        <div class="statcard"><b style="color:var(--success)">3</b><span>Approved</span></div>
+        <div class="statcard"><b style="color:var(--danger)">2</b><span>Rejected</span></div>
+      </div>
+      <div class="qgrid">
+        <div class="qcard" onclick="goApp('generator')"><div class="qi">🖼</div>Generate Poster</div>
+        <div class="qcard" onclick="goApp('generator')"><div class="qi">🎬</div>Generate Video</div>
+        <div class="qcard" onclick="goApp('generator')"><div class="qi">📐</div>Generate Banner</div>
+        <div class="qcard" onclick="goApp('generator')"><div class="qi">📝</div>Generate Article</div>
+      </div>
+    </section>
+
+    <section class="screen" id="scr-generator">
+      <div class="mainhead"><h2>AI Content Generator</h2></div>
+      <div class="panel">
+        <p class="sub" style="margin-bottom:16px;">Describe your content and let AI create something amazing for you.</p>
+        <label>Prompt</label>
+        <textarea class="field" id="prompt" maxlength="1000" oninput="document.getElementById('cc').textContent=prompt.value.length">Create a modern poster for our AI workshop with a futuristic theme.</textarea>
+        <div class="charcount"><span id="cc">62</span>/1000</div>
+        <div class="grid4" style="margin-top:14px;">
+          <div><label>Content Type</label><select class="field" id="ctype"><option>Poster</option><option>Video</option><option>Banner</option><option>Article</option></select></div>
+          <div><label>Style</label><select class="field"><option>Modern</option><option>Minimal</option><option>Bold</option></select></div>
+          <div><label>Aspect Ratio</label><select class="field"><option>1:1 (Square)</option><option>16:9</option><option>9:16</option></select></div>
+          <div><label>Color Theme</label><select class="field"><option>Blue</option><option>Violet</option><option>Amber</option></select></div>
+        </div>
+        <button class="btn btn-primary" id="genBtn" onclick="generateContent()" style="margin-top:20px;">＋ Generate Content</button>
+      </div>
+    </section>
+
+    <section class="screen" id="scr-generated">
+      <div class="mainhead"><h2>Generated Content</h2><span class="pill pending"><span></span>Read Only</span></div>
+      <div class="genlayout">
+        <div class="imgcard">
+          <span class="readonlybadge">Read Only</span>
+          <h3 id="genHeadline">The Future of Artificial Intelligence</h3>
+          <p>Empowering businesses. Transforming tomorrow.</p>
+          <div class="brand">JZD · TECHNOLOGIES</div>
+        </div>
+        <div class="panel" style="padding:20px;">
+          <b style="font-size:14px;">Content Details</b>
+          <div class="detailrow"><span>Type</span><span id="dType">Poster</span></div>
+          <div class="detailrow"><span>Style</span><span>Modern</span></div>
+          <div class="detailrow"><span>Generated On</span><span id="dDate"></span></div>
+          <div class="detailrow"><span>Status</span><span class="pill pending" id="dStatus"><span></span>Under Review</span></div>
+          <p class="sub" style="margin-top:14px;">This content is read-only and under admin review. You'll be notified once the review is completed.</p>
+          <button class="btn btn-primary" onclick="goApp('submitted')">Submit to Admin</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="scr-submitted">
+      <div class="mainhead"><h2>Submission to Admin</h2></div>
+      <div class="panel" style="max-width:640px;">
+        <p class="sub">Your content has been submitted for admin review.</p>
+        <div class="journey">
+          <div class="jnode"><div class="jcircle done">👤</div><span>User (You)</span></div>
+          <div class="jline"></div>
+          <div class="jnode"><div class="jcircle done">📄</div><span>Content Submitted</span></div>
+          <div class="jline"></div>
+          <div class="jnode"><div class="jcircle">🛡</div><span>Admin Review</span></div>
+          <div class="jline"></div>
+          <div class="jnode"><div class="jcircle">✓✕</div><span>Decision</span></div>
+        </div>
+        <div class="noticebox">ⓘ You'll be notified via email and dashboard once the admin has reviewed your content.</div>
+        <button class="btn btn-ghost" onclick="goApp('admin')">Preview: open the admin's review link →</button>
+      </div>
+    </section>
+
+    <section class="screen" id="scr-admin">
+      <div class="mainhead"><h2>Admin Review</h2></div>
+      <div class="reviewcard" style="max-width:640px;">
+        <div class="rthumb"></div>
+        <div class="rinfo">
+          <div class="rr"><span>User</span><span>John Doe</span></div>
+          <div class="rr"><span>Type</span><span id="aType">Poster</span></div>
+          <div class="rr"><span>Generated On</span><span id="aDate"></span></div>
+          <div class="rr"><span>Prompt</span><span id="aPrompt" style="max-width:220px;text-align:right;"></span></div>
+          <div class="rr"><span>Status</span><span class="pill pending"><span></span>Under Review</span></div>
+        </div>
+      </div>
+      <label style="max-width:640px;">Comment (required if rejecting)</label>
+      <textarea class="field" id="adminComment" style="max-width:640px;" placeholder="e.g. Please include more details about the event and add date & venue information."></textarea>
+      <div class="decisionrow" style="max-width:640px;">
+        <button class="btn btn-success" onclick="adminDecide('approved')">Accept</button>
+        <button class="btn" style="background:var(--danger);color:#fff;" onclick="adminDecide('rejected')">Reject</button>
+      </div>
+    </section>
+
+    <section class="screen" id="scr-rejected">
+      <div class="mainhead"><h2>Review Update</h2></div>
+      <div class="panel center" style="max-width:520px;">
+        <div class="iconring bad"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+        <h2 class="title">Your content was not accepted.</h2>
+        <div class="commentbox" style="text-align:left;">
+          <p class="lbl">Admin comment</p>
+          <div class="bubble" id="rejectNote"></div>
+          <div id="userReplies"></div>
+          <input class="field" id="replyInput" placeholder="Reply or ask a question…">
+        </div>
+        <button class="btn btn-ghost" onclick="sendReply()">Send Reply</button>
+        <button class="btn btn-primary" onclick="goApp('generator')">Update &amp; Resend for Review</button>
+      </div>
+    </section>
+
+    <section class="screen" id="scr-approved">
+      <div class="mainhead"><h2>Review Update</h2></div>
+      <div class="panel center" style="max-width:480px;">
+        <div class="iconring ok"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h2 class="title">Content Approved! 🎉</h2>
+        <p class="sub">Great news! Your content has been approved by the admin. You can now download it.</p>
+        <button class="btn btn-ghost" onclick="downloadContent()">⬇ Download content</button>
+        <button class="btn btn-primary" onclick="goApp('publish')">Proceed to Publish</button>
+      </div>
+    </section>
+
+    <section class="screen" id="scr-publish">
+      <div class="mainhead"><h2>Publish to Social Media</h2></div>
+      <div class="panel" style="max-width:640px;">
+        <p class="sub" style="margin-bottom:0;">Select platforms to publish your content</p>
+        <div class="platgrid" id="platGrid">
+          <button class="plat on" data-p="Facebook"><div class="pmark" style="background:#1877F2;">f</div><div><p class="pname">Facebook</p><p class="pnote">Page</p></div><div class="toggle"></div></button>
+          <button class="plat on" data-p="Instagram"><div class="pmark" style="background:#E1306C;">◎</div><div><p class="pname">Instagram</p><p class="pnote">Feed</p></div><div class="toggle"></div></button>
+          <button class="plat on" data-p="LinkedIn"><div class="pmark" style="background:#0A66C2;">in</div><div><p class="pname">LinkedIn</p><p class="pnote">Company Page</p></div><div class="toggle"></div></button>
+          <button class="plat on" data-p="WhatsApp"><div class="pmark" style="background:#25D366;">WA</div><div><p class="pname">WhatsApp</p><p class="pnote">Business</p></div><div class="toggle"></div></button>
+          <button class="plat" data-p="X"><div class="pmark" style="background:#111827;">X</div><div><p class="pname">Twitter / X</p><p class="pnote">Profile</p></div><div class="toggle"></div></button>
+          <button class="plat" data-p="YouTube"><div class="pmark" style="background:#FF0000;">▶</div><div><p class="pname">YouTube</p><p class="pnote">Channel</p></div><div class="toggle"></div></button>
+          <button class="plat" data-p="Pinterest"><div class="pmark" style="background:#E60023;">P</div><div><p class="pname">Pinterest</p><p class="pnote">Board</p></div><div class="toggle"></div></button>
+        </div>
+        <label>Schedule (optional)</label>
+        <input class="field" type="datetime-local" id="schedTime">
+        <div class="rowbtns" id="publishBtns">
+          <button class="btn btn-ghost" onclick="goApp('approved')">Back</button>
+          <button class="btn btn-primary" id="publishBtn" onclick="publishNow()">🚀 Publish Now</button>
+        </div>
+        <div id="publishResults" style="display:none;margin-top:14px;"></div>
+        <button class="btn btn-primary" id="anotherBtn" style="display:none;" onclick="goApp('dashboard')">Back to Dashboard</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// Change this if your backend runs somewhere other than localhost:8000
+const API_BASE = 'http://localhost:8000';
+
+// Demo-only convenience: this lets the same browser tab act as "the admin"
+// when you click "Preview: open the admin's review link". In a real
+// deployment the admin would sign in separately in their own session with
+// their own credentials — this shortcut just makes the flow demoable
+// end-to-end from a single tab. Matches the SEED_ADMIN_* values in .env.
+const DEMO_ADMIN_EMAIL = 'admin@jzdtechnologies.com';
+const DEMO_ADMIN_PASSWORD = 'Admin@12345';
+
+let state = { token:null, role:null, fullName:null, email:'', otp:'',
+              contentId:null, adminToken:null };
+
+function toast(msg, ms=3600){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'), ms);
+}
+
+async function api(path, { method='GET', body=null, token=null } = {}){
+  let res;
+  try{
+    res = await fetch(API_BASE+path, {
+      method,
+      headers: Object.assign(
+        { 'Content-Type':'application/json' },
+        token ? { 'Authorization':'Bearer '+token } : {}
+      ),
+      body: body ? JSON.stringify(body) : null,
+    });
+  }catch(err){
+    toast("Can't reach the backend at "+API_BASE+" — make sure it's running (see README).", 5000);
+    throw err;
+  }
+  let data = null;
+  try{ data = await res.json(); }catch(e){ /* no body */ }
+  if(!res.ok){
+    const msg = (data && data.detail) ? data.detail : ('Request failed ('+res.status+')');
+    toast(msg, 4200);
+    throw new Error(msg);
+  }
+  return data;
+}
+
+/* ---------- auth screens ---------- */
+function show(id){
+  document.querySelectorAll('#authShell .screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el) el.classList.add('active');
+}
+
+async function submitCreate(){
+  const full_name = document.getElementById('fName').value.trim();
+  const email = document.getElementById('fEmail').value.trim();
+  const organization = document.getElementById('fOrg').value.trim();
+  const password = document.getElementById('fPass').value;
+  if(!full_name || !email || !password){ toast('Fill in your name, email and password'); return; }
+  if(password.length < 8){ toast('Password must be at least 8 characters'); return; }
+  try{
+    const data = await api('/auth/signup', { method:'POST', body:{ full_name, email, organization, password } });
+    state.email = email;
+    document.getElementById('otpEmail').textContent = email;
+    document.querySelectorAll('.otp-box').forEach(b=>b.value='');
+    document.getElementById('otpErr').style.display='none';
+    show('scr-otp');
+    setTimeout(()=>document.querySelector('.otp-box').focus(), 150);
+    toast(data.dev_otp ? ('Demo mode — your code is '+data.dev_otp+' (check the backend terminal too)')
+                        : 'Code sent — check your email', 5000);
+  }catch(e){ /* toast already shown */ }
+}
+
+async function sendOtp(isResend){
+  try{
+    const data = await api('/auth/resend-otp', { method:'POST', body:{ email: state.email } });
+    document.querySelectorAll('.otp-box').forEach(b=>b.value='');
+    document.getElementById('otpErr').style.display='none';
+    toast(data.dev_otp ? ('New demo code: '+data.dev_otp) : 'A new code has been sent', 5000);
+  }catch(e){}
+}
+
+document.addEventListener('input', e=>{
+  if(e.target.classList.contains('otp-box')){
+    e.target.value = e.target.value.replace(/\D/g,'');
+    if(e.target.value && e.target.nextElementSibling && e.target.nextElementSibling.classList.contains('otp-box')){
+      e.target.nextElementSibling.focus();
+    }
+  }
+});
+document.addEventListener('keydown', e=>{
+  if(e.target.classList.contains('otp-box') && e.key==='Backspace' && !e.target.value && e.target.previousElementSibling){
+    e.target.previousElementSibling.focus();
+  }
+});
+
+async function verifyOtp(){
+  const entered = [...document.querySelectorAll('.otp-box')].map(b=>b.value).join('');
+  if(entered.length<6){ toast('Enter all 6 digits'); return; }
+  try{
+    const data = await api('/auth/verify-otp', { method:'POST', body:{ email: state.email, code: entered } });
+    document.getElementById('otpErr').style.display='none';
+    show('scr-success');
+  }catch(e){
+    document.getElementById('otpErr').style.display='block';
+  }
+}
+
+async function enterApp(){
+  const email = document.getElementById('siEmail').value.trim();
+  const password = document.getElementById('siPass').value;
+  const errEl = document.getElementById('signinErr');
+  errEl.style.display='none';
+  if(!email || !password){ toast('Enter your email and password'); return; }
+  try{
+    const data = await api('/auth/login', { method:'POST', body:{ email, password } });
+    state.token = data.access_token; state.role = data.role; state.fullName = data.full_name;
+    try{ localStorage.setItem('jzd_token', state.token); }catch(e){}
+    document.getElementById('authShell').style.display='none';
+    document.getElementById('appShell').classList.add('active');
+    document.querySelector('#scr-dashboard .welcomebar b').textContent = 'Welcome back, '+state.fullName.split(' ')[0]+'! 👋';
+    goApp('dashboard');
+    toast('Signed in');
+  }catch(e){
+    errEl.textContent = e.message; errEl.style.display='block';
+  }
+}
+
+function logout(){
+  state.token=null; state.role=null;
+  try{ localStorage.removeItem('jzd_token'); }catch(e){}
+  document.getElementById('appShell').classList.remove('active');
+  document.getElementById('authShell').style.display='flex';
+  show('scr-welcome');
+}
+
+/* ---------- app screens ---------- */
+function goApp(name){
+  const map={dashboard:'scr-dashboard',generator:'scr-generator',generated:'scr-generated',submitted:'scr-submitted',
+             admin:'scr-admin',rejected:'scr-rejected',approved:'scr-approved',publish:'scr-publish'};
+  document.querySelectorAll('#appShell .main .screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(map[name]).classList.add('active');
+  document.getElementById('nav-dash').classList.toggle('on', name==='dashboard');
+  document.getElementById('nav-gen').classList.toggle('on', ['generator','generated'].includes(name));
+  if(name==='dashboard') refreshStats();
+  if(name==='admin') loadAdminReview();
+}
+
+async function refreshStats(){
+  try{
+    const items = await api('/content/mine', { token: state.token });
+    const counts = { total: items.length, pending_review:0, approved:0, rejected:0 };
+    items.forEach(c=>{ if(counts[c.status]!==undefined) counts[c.status]++; });
+    const cards = document.querySelectorAll('#scr-dashboard .statcard b');
+    cards[0].textContent = counts.total;
+    cards[1].textContent = counts.pending_review;
+    cards[2].textContent = counts.approved;
+    cards[3].textContent = counts.rejected;
+  }catch(e){}
+}
+
+async function generateContent(){
+  const btn = document.getElementById('genBtn');
+  const prompt = document.getElementById('prompt').value.trim();
+  if(!prompt){ toast('Describe what you want to create first'); return; }
+  const content_type = document.getElementById('ctype').value;
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Generating…';
+  try{
+    const data = await api('/content/generate', {
+      method:'POST', token: state.token,
+      body:{ prompt, content_type, style:'Modern', aspect_ratio:'1:1 (Square)', color_theme:'Blue' }
+    });
+    state.contentId = data.id;
+    document.getElementById('genHeadline').textContent = prompt.slice(0,60);
+    document.getElementById('dType').textContent = data.content_type;
+    document.getElementById('dDate').textContent = new Date(data.created_at).toLocaleString('en-US',
+      { day:'numeric', month:'short', year:'numeric', hour:'numeric', minute:'2-digit' });
+    goApp('generated');
+    toast('Content generated — it stays read-only until admin review');
+  }catch(e){
+  }finally{
+    btn.disabled=false; btn.textContent='＋ Generate Content';
+  }
+}
+
+async function submitForReview(){
+  try{
+    await api('/content/'+state.contentId+'/submit', { method:'POST', token: state.token });
+    goApp('submitted');
+    toast('Sent to the admin for review');
+  }catch(e){}
+}
+
+async function loadAdminReview(){
+  try{
+    if(!state.adminToken){
+      const data = await api('/auth/login', { method:'POST', body:{ email: DEMO_ADMIN_EMAIL, password: DEMO_ADMIN_PASSWORD } });
+      state.adminToken = data.access_token;
+    }
+    const c = await api('/content/'+state.contentId, { token: state.adminToken });
+    document.getElementById('aType').textContent = c.content_type;
+    document.getElementById('aDate').textContent = new Date(c.created_at).toLocaleString('en-US',
+      { day:'numeric', month:'short', year:'numeric' });
+    document.getElementById('aPrompt').textContent = c.prompt.slice(0,40)+(c.prompt.length>40?'…':'');
+    document.getElementById('adminComment').value = '';
+  }catch(e){
+    toast('Could not load the admin session — is the backend running?');
+  }
+}
+
+async function adminDecide(decision){
+  const comment = document.getElementById('adminComment').value.trim();
+  try{
+    await api('/admin/'+state.contentId+'/decide', {
+      method:'POST', token: state.adminToken, body:{ decision, comment: comment || null }
+    });
+    if(decision==='approved'){
+      goApp('approved');
+      toast('Approved — the requester can now download it');
+    }else{
+      const c = await api('/content/'+state.contentId, { token: state.token });
+      document.getElementById('rejectNote').textContent = c.admin_comment;
+      document.getElementById('userReplies').innerHTML='';
+      goApp('rejected');
+      toast('Changes requested — a note was sent to the requester');
+    }
+  }catch(e){}
+}
+
+async function sendReply(){
+  const input = document.getElementById('replyInput');
+  if(!input.value.trim()) return;
+  try{
+    await api('/content/'+state.contentId+'/comments', { method:'POST', token: state.token, body:{ body: input.value.trim() } });
+    const b=document.createElement('div'); b.className='bubble'; b.textContent=input.value.trim();
+    document.getElementById('userReplies').appendChild(b);
+    input.value='';
+    toast('Reply sent to the admin');
+  }catch(e){}
+}
+
+async function downloadContent(){
+  try{
+    const res = await fetch(API_BASE+'/content/'+state.contentId+'/download', {
+      headers:{ 'Authorization':'Bearer '+state.token }
+    });
+    if(!res.ok){
+      const d = await res.json().catch(()=>({}));
+      toast(d.detail || "Download not allowed yet"); return;
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href=url; a.download='jzd-content.svg';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+    toast('Download started');
+  }catch(e){
+    toast("Can't reach the backend — make sure it's running.");
+  }
+}
+
+document.getElementById('platGrid').addEventListener('click', e=>{
+  const btn=e.target.closest('.plat'); if(!btn) return;
+  btn.classList.toggle('on');
+  updatePublishLabel();
+});
+function updatePublishLabel(){
+  const n=document.querySelectorAll('.plat.on').length;
+  const btn=document.getElementById('publishBtn');
+  btn.textContent = n ? `🚀 Publish to ${n} platform${n>1?'s':''}` : 'Select a platform';
+  btn.disabled = n===0;
+}
+
+async function publishNow(){
+  const platforms=[...document.querySelectorAll('.plat.on')].map(p=>p.dataset.p);
+  if(!platforms.length){ toast('Select at least one platform'); return; }
+  const btn=document.getElementById('publishBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Publishing…';
+  try{
+    const data = await api('/publish/'+state.contentId, { method:'POST', token: state.token, body:{ platforms } });
+    document.getElementById('publishBtns').style.display='none';
+    const box=document.getElementById('publishResults');
+    box.style.display='block';
+    box.innerHTML = '<b style="font-size:13.5px;">Published 🎉</b>' + data.results.map(r=>
+      `<div class="resultrow"><span>${r.platform}</span><span class="${r.status==='published'?'okdot':''}" style="${r.status!=='published'?'color:var(--danger);font-size:11.5px;':''}">${r.status==='published'?'✓':(r.error||'failed')}</span></div>`
+    ).join('');
+    document.getElementById('anotherBtn').style.display='block';
+    toast('Publish request completed');
+  }catch(e){
+    btn.disabled=false;
+  }finally{
+    updatePublishLabel();
+  }
+}
+
+/* wire up buttons that used to be static onclick in the markup */
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.querySelector('#scr-generated button.btn-primary').setAttribute('onclick','submitForReview()');
+  document.querySelector('#scr-rejected button.btn-primary').setAttribute('onclick','resendForReview()');
+});
+async function resendForReview(){
+  try{
+    await api('/content/'+state.contentId+'/submit', { method:'POST', token: state.token });
+    goApp('submitted');
+    toast('Updated content sent back for review');
+  }catch(e){}
+}
+
+show('scr-welcome');
+</script>
+</body>
+</html>
